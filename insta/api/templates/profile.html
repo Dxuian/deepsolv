@@ -3,7 +3,6 @@
 {% block content %}
     <h2>{{ username }}'s Profile</h2>
 
-<!-- Follow/Unfollow Button -->
 <div class="follow-btn">
     {% if request.user.username != username %}
         {% if is_following %}
@@ -21,7 +20,6 @@
 </div>
 
 
-    <!-- Post Form -->
     {% if form %}
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -30,40 +28,32 @@
         </form>
     {% endif %}
 
-    <!-- Display Posts -->
     <div>
         {% for post in page_obj %}
             <div class="post" style="background-color: antiquewhite; margin-bottom: 10px; padding: 10px;">
                 <h3>Post by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></h3>
 
-                <!-- Display the caption/content of the post -->
                 <p><strong>Title:</strong> {{ post.title }}</p>
                 <p><strong>Caption:</strong> {{ post.caption.content }}</p>
 
-                <!-- Show image if the post has one -->
                 {% if post.image_or_video_url %}
                     <img src="{{ post.image_or_video_url }}" alt="Post Image" class="post-image" style="max-width: 100%; height: auto;">
                 {% endif %}
 
-                <!-- Show the category of the post -->
                 <p><strong>Category:</strong> {{ post.category }}</p>
 
-                <!-- Show the location of the post -->
                 {% if post.location %}
                     <p><strong>Location:</strong> {{ post.location }}</p>
                 {% endif %}
 
-                <!-- Show the time the post was created -->
                 <p><strong>Posted on:</strong> {{ post.when_posted|date:"F j, Y, g:i a" }}</p>
 
-                <!-- Display the like count for the post -->
                 {% if post.likes.count %}
                     <p><strong>Likes:</strong> {{ post.likes.count }}</p>
                 {% else %}
                     <p>No likes yet.</p>
                 {% endif %}
 
-                <!-- Display likes if there are any -->
                 <div class="likes-list">
                     <h4>Liked By:</h4>
                     {% if post.likes.count %}
@@ -77,7 +67,6 @@
                     {% endif %}
                 </div>
 
-                <!-- View Comments -->
                 <div class="comments-list">
                     <h4>Comments:</h4>
                     {% if post.comments.count %}
@@ -94,7 +83,6 @@
         {% endfor %}
     </div>
 
-    <!-- Pagination -->
     <div>
         <span class="btn">Page: {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
     </div>

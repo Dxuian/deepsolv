@@ -4,14 +4,12 @@
     <div class="max-w-4xl mx-auto p-4">
         <h2 class="text-2xl font-semibold mb-6">Homepage</h2>
 
-        <!-- Post Form -->
         <div class="bg-aqua-100 p-4 mb-6 text-red-600">
             <button type="button" class="btn btn-primary text-white bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded" data-bs-toggle="modal" data-bs-target="#postModal">
                 Add Post
             </button>
         </div>
 
-        <!-- Modal -->
         <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -32,7 +30,6 @@
             </div>
         </div>
 
-        <!-- Display Posts -->
         <div>
             <h3 class="text-xl font-semibold mb-4">Recent Posts</h3>
 
@@ -41,27 +38,20 @@
                     <div class="bg-amber-100 p-4 rounded-lg shadow-md mb-6">
                         <h3 class="text-2xl font-semibold">{{ post_data.post.title }}</h3>
 
-                        <!-- Display the caption/content of the post -->
                         <p class="text-gray-700 mb-4">{{ post_data.post.caption.content }}</p>
 
-                        <!-- Show image if the post has one -->
                         {% if post_data.post.image_or_video_url %}
                             <img src="{{ post_data.post.image_or_video_url }}" alt="Post Image" class="w-full h-auto rounded-lg mb-4">
                         {% endif %}
 
-                        <!-- Show the category of the post -->
                         <p class="text-sm text-gray-600">Category: {{ post_data.post.category }}</p>
 
-                        <!-- Show the time the post was created -->
                         <p class="text-sm text-gray-600">Posted on: {{ post_data.post.when_posted|date:"F j, Y, g:i a" }}</p>
 
-                        <!-- Link to the user's profile -->
                         <p class="text-sm text-gray-600">Posted by: <a href="{% url 'profile' username=post_data.post.user.username %}" class="text-blue-500 hover:text-blue-700">{{ post_data.post.user.username }}</a></p>
 
-                        <!-- Link to the Post Detail Page -->
                         <a href="{% url 'post_detail' post_data.post.post_id %}" class="btn btn-secondary bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mb-4">View Post</a>
 
-                        <!-- Like Button -->
                         {% if request.user != post_data.post.user %}
                             {% if post_data.liked_by_user %}
                                 <button class="btn btn-warning bg-yellow-500 text-white py-2 px-4 rounded" disabled>Liked</button>
@@ -74,14 +64,12 @@
                             {% endif %}
                         {% endif %}
 
-                        <!-- Link to Likes List -->
                         <p>
                             <a href="{% url 'post_likes' post_data.post.post_id %}" class="text-blue-500 hover:text-blue-700">
                                 Likes: {{ post_data.post.likes.count }}
                             </a>
                         </p>
 
-                        <!-- Comment Form -->
                         <form method="POST" class="mt-4">
                             {% csrf_token %}
                             <input type="text" name="content" placeholder="Add a comment" required class="w-full p-2 mb-4 border border-gray-300 rounded">
@@ -89,7 +77,6 @@
                             <input type="hidden" name="post_id" value="{{ post_data.post.post_id }}">
                         </form>
 
-                        <!-- Display comments -->
                         <div>
                             <h4 class="text-lg font-semibold mt-4">Comments:</h4>
                             {% if post_data.comments %}
@@ -109,7 +96,6 @@
             {% endif %}
         </div>
 
-        <!-- Pagination -->
         <div class="pagination mt-6">
             <span class="step-links text-sm">
                 {% if page_obj.has_previous %}
