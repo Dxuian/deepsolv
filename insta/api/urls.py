@@ -11,7 +11,7 @@ from . import views
 urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
-    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('logout/', views.user_logout, name='user_logout'),
     path('', views.homepage, name='homepage'),
     path('profile/<str:username>/', views.profile, name='profile'),
     path('post/<uuid:post_id>/', views.post_detail, name='post_detail'),

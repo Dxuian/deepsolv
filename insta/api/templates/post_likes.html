@@ -1,10 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>People who liked the post</h2>
-    <ul>
-        {% for like in likes %}
-            <li>{{ like.user.username }}</li>
-        {% endfor %}
-    </ul>
+    <h2>Post Likes</h2>
+
+    <!-- Display the full post details -->
+    <div class="post-details" style="background-color: antiquewhite; margin-bottom: 10px; padding: 10px;">
+        <h3>{{ post.title }}</h3>
+
+        <!-- Display the caption/content of the post -->
+        <p>{{ post.caption.content }}</p>
+
+        <!-- Show image if the post has one -->
+        {% if post.image_or_video_url %}
+            <img src="{{ post.image_or_video_url }}" alt="Post Image" class="post-image">
+        {% endif %}
+
+        <!-- Show the category of the post -->
+        <p>Category: {{ post.category }}</p>
+
+        <!-- Show the time the post was created -->
+        <p>Posted on: {{ post.when_posted|date:"F j, Y, g:i a" }}</p>
+
+        <!-- Display the like count for the post -->
+        {% if likes %}
+            <p>Likes: {{ likes.count }}</p>
+        {% else %}
+        {% endif %}
+    </div>
+
+    <!-- Display likes if there are any -->
+    <div class="likes-list">
+        <h3>Liked By:</h3>
+        {% if likes %}
+            <ul>
+                {% for like in likes %}
+                    <li>{{ like.user.username }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No likes yet.</p>
+        {% endif %}
+    </div>
+
 {% endblock %}

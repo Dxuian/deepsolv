@@ -11,7 +11,14 @@
         <nav>
             <a href="{% url 'homepage' %}">Home</a>
             <a href="{% url 'profile' user.username %}">Profile</a>
-            <a href="{% url 'logout' %}">Logout</a>
+            <!-- Logout form -->
+            <form method="POST" action="{% url 'user_logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+            <div>
+              Your feed :   {{ user.username }}
+            </div>
         </nav>
     {% else %}
         <nav>
@@ -19,6 +26,7 @@
             <a href="{% url 'register' %}">Register</a>
         </nav>
     {% endif %}
+    
     <div>
         {% block content %}{% endblock %}
     </div>

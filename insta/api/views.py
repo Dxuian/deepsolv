@@ -30,7 +30,11 @@ def hello_world(request):
     return HttpResponse("Hello, World!")
 
 
-
+@login_required
+def user_logout(request):
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('login')
  
 
 DEV = True
@@ -175,76 +179,100 @@ from .models import Post, Follows, User
 from django.core.paginator import Paginator
 from django.contrib import messages
 
-@login_required
-def homepage(request):
-    # Get the posts of the users followed by the logged-in user
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            caption = form.cleaned_data["caption"]
-            image_or_video_url = form.cleaned_data["image_or_video_url"]
-            category = form.cleaned_data["category"]
-            location = form.cleaned_data["location"]
-            title = form.cleaned_data["title"]
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Post, Follows, Comment
+from .forms import PostForm
 
-            post_caption = PostCaption.objects.create(content=caption)
-            Post.objects.create(
-                user=request.user,
-                caption=post_caption,
-                image_or_video_url=image_or_video_url,
-                category=category,
-                title=title,
-                location=location
-            )
-            messages.success(request, "Post created successfully!")
+from .models import Comment  
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Post, Likes as Like
+
+def homepage(request):
+    if request.method == "POST":
+        if "create_post" in request.POST:
+            form = PostForm(request.POST)
+            if form.is_valid():
+                caption = form.cleaned_data["caption"]
+                image_or_video_url = form.cleaned_data["image_or_video_url"]
+                category = form.cleaned_data["category"]
+                location = form.cleaned_data["location"]
+                title = form.cleaned_data["title"]
+
+                post_caption = PostCaption.objects.create(content=caption)
+                Post.objects.create(
+                    user=request.user,
+                    caption=post_caption,
+                    image_or_video_url=image_or_video_url,
+                    category=category,
+                    title=title,
+                    location=location
+                )
+                messages.success(request, "Post created successfully!")
+                return redirect("homepage")
+        
+        # Handle Comment submission
+        if "create_comment" in request.POST:
+            post_id = request.POST.get("post_id")
+            content = request.POST.get("content")
+            post = Post.objects.get(post_id=post_id)
+            Comment.objects.create(post=post, user=request.user, content=content)
+            messages.success(request, "Comment added successfully!")
             return redirect("homepage")
+        
+        if "add_like" in request.POST:
+            post_id = request.POST.get("post_id")
+            post = Post.objects.get(post_id=post_id)
+            
+            if post.user == request.user:
+                messages.error(request, "You cannot like your own post.")
+            else:
+                Like.objects.get_or_create(user=request.user, post=post)
+                messages.success(request, "Post liked successfully!")
+            
+            return redirect("homepage")
+
     form = PostForm()
     followed_users = Follows.objects.filter(follower=request.user).values_list('followed', flat=True)
     followed_posts = Post.objects.filter(user_id__in=followed_users).order_by('-when_posted')[:7]
 
-    # Get the posts from users not followed by the logged-in user (global posts)
-    all_users = User.objects.exclude(id=request.user.id)  # Exclude the logged-in user
+    all_users = User.objects.exclude(id=request.user.id)   
     non_followed_users = all_users.exclude(id__in=followed_users)
     global_posts = Post.objects.filter(user_id__in=non_followed_users).order_by('-when_posted')[:3]
 
-    # Include posts by the logged-in user (their own posts)
     user_posts = Post.objects.filter(user=request.user).order_by('-when_posted')[:10]
 
-    # Combine the posts: 7 followed posts, 3 non-followed posts, and the user's own posts
     all_posts = list(followed_posts) + list(global_posts) + list(user_posts)
 
-    # Paginate the posts
-    paginator = Paginator(all_posts, 10)  # 10 posts per page
+    paginator = Paginator(all_posts, 10)   
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Handle post creation
-    
-
-    # Get the last 3 comments for each post
     posts_with_comments = []
     for post in page_obj:
+        liked_by_user = Like.objects.filter(user=request.user, post=post).exists()
+        
         comments = post.comments.all().order_by('-created_at')[:3]
-        posts_with_comments.append({'post': post, 'comments': comments})
+        posts_with_comments.append({'post': post, 'comments': comments, 'liked_by_user': liked_by_user})
 
     return render(request, "homepage.html", {
         "form": form,
         "posts": posts_with_comments,
-        "page_obj": page_obj,
+        "page_obj": page_obj
     })
-
 
 @login_required
 def profile(request, username):
     user = request.user
     posts = Post.objects.filter(user=user).order_by('-when_posted')
 
-    # Paginate the posts (last 10)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Handle post creation
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
@@ -273,10 +301,8 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = Post.objects.get(post_id=post_id)
 
-    # Get all comments for this post
     comments = post.comments.all().order_by('-created_at')
 
-    # Handle comment submission
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -292,6 +318,22 @@ def post_detail(request, post_id):
 @login_required
 def post_likes(request, post_id):
     post = Post.objects.get(post_id=post_id)
+
+    if request.method == "POST":
+        if post.user == request.user:
+            messages.error(request, "You cannot like your own post.")
+            return redirect("post_likes", post_id=post_id)
+
+        Likes.objects.create(user=request.user, post=post)
+        messages.success(request, "Post liked successfully!")
+        return redirect("post_likes", post_id=post_id)
+    
     likes = post.likes.all()
 
-    return render(request, 'post_likes.html', {"post": post, "likes": likes})
+    return render(request, 'post_likes.html', {
+        "post": post,
+        "likes": likes,
+        "message": "No likes yet." if likes.count() == 0 else None
+    })
+
+

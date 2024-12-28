@@ -6,6 +6,12 @@
     <p>Category: {{ post.category }}</p>
     <p>Location: {{ post.location }}</p>
 
+    {% if post.image_or_video_url %}
+        <img src="{{ post.image_or_video_url }}" alt="Post Image" class="post-image">
+    {% endif %}
+    
+    <p>Posted on: {{ post.when_posted|date:"F j, Y, g:i a" }}</p>
+
     <h3>Comments:</h3>
     <ul>
         {% for comment in comments %}
