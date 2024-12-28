@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>People who liked the post</h2>
+    <ul>
+        {% for like in likes %}
+            <li>{{ like.user.username }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

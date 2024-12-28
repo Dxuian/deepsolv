@@ -62,6 +62,10 @@ from django import forms
 from django import forms
 from .models import Comment, Post
 class PostForm(forms.Form):
+    title = forms.CharField(widget=forms.Textarea(attrs={
+        'class': 'mt-1 w-full rounded-md border-gray-200 p-1.5 bg-white text-sm text-gray-700 shadow-sm',
+        'placeholder': 'Enter caption for your post'
+    }))
     caption = forms.CharField(widget=forms.Textarea(attrs={
         'class': 'mt-1 w-full rounded-md border-gray-200 p-1.5 bg-white text-sm text-gray-700 shadow-sm',
         'placeholder': 'Enter caption for your post'

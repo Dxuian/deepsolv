@@ -3,10 +3,12 @@
 {% block content %}
     <h2>Homepage</h2>
 
-    <!-- Button to trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#postModal">
+    <!-- Post Form -->
+     <div style="color: red; background-color: aqua;">
+
+    <text type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postModal">
         Add Post
-    </button>
+    </text>
 
     <!-- Modal -->
     <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
@@ -20,22 +22,46 @@
                     <form method="POST">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Post</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Display Posts here -->
-    <div class="posts">
-        {% for post in posts %}
+    <!-- Display Posts -->
+    <div>
+        <h3>Recent Posts</h3>
+        {% for post, comments in posts %}
             <div class="post">
-                <h4>{{ post.user.username }}</h4>
+                <h3>{{ post.title }}</h3>
                 <p>{{ post.caption.content }}</p>
-                <img src="{{ post.image_or_video_url }}" alt="Post Media" />
+                <a href="{% url 'post_detail' post_id=post.post_id %}">View Post</a>
+                <div>
+                    {% for comment in comments %}
+                        <p>{{ comment.content }} by {{ comment.user.username }}</p>
+                    {% endfor %}
+                </div>
             </div>
         {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div>
+        <span class="btn">Page: {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <div class="pagination">
+            <span class="page-item">
+                {% if page_obj.has_previous %}
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+            </span>
+            <span class="page-item">
+                {% if page_obj.has_next %}
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                {% endif %}
+            </span>
+        </div>
     </div>
 
 {% endblock %}
