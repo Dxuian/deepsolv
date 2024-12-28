@@ -1,16 +1,5 @@
-#!/usr/bin/env bash
-# filepath: /C:/Users/death/Desktop/deepsolv/wait-for-it.sh
+#!/bin/bash
 
-set -e
+/code/wait-for-it.sh db:3306 --timeout=30 --strict -- echo "MySQL is up - starting web service"
 
-host="$1"
-shift
-cmd="$@"
-
-until nc -z "$host" 3306; do
-  >&2 echo "MySQL is unavailable - sleeping"
-  sleep 1
-done
-
->&2 echo "MySQL is up - executing command"
-exec $cmd
+exec "$@"
