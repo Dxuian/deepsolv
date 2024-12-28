@@ -1,21 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Login</h2>
+  <h2 class="text-2xl font-bold mb-4">Login page</h2>
 
   {% if messages %}
-    <ul class="message-list">
+    <ul class="message-list mb-4">
       {% for message in messages %}
-        <li class="message {{ message.tags }}">{{ message }}</li>
+        <li class="message {{ message.tags }} text-white">{{ message }}</li>
       {% endfor %}
     </ul>
   {% endif %}
 
-  <form method="POST">
+  <form method="POST" class="space-y-4">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Login</button>
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</button>
   </form>
 
-  <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+  <p class="mt-4">Don't have an account? 
+    <a href="{% url 'register' %}" class="text-blue-500 hover:text-blue-700">Register here</a>
+  </p>
 {% endblock %}
