@@ -16,9 +16,12 @@
                 {% csrf_token %}
                 <button type="submit">Logout</button>
             </form>
-            <div>
-              Your feed :   {{ user.username }}
-            </div>
+            <!-- if url is /homepage then show this  -->
+            {% if request.path == '/homepage/' %}
+                <div>
+                Your feed :   {{ user.username }}
+              </div>
+            {% endif %}
         </nav>
     {% else %}
         <nav>

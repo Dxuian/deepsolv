@@ -234,36 +234,48 @@ def homepage(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from .models import Post, Follows
+from django.contrib import messages
+
+from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect
+from .models import Post, Follows
+from django.contrib import messages
+from django.core.paginator import Paginator
+
+userget = get_user_model()  # Get the custom user model
+
 def profile(request, username):
     user = request.user
-    posts = Post.objects.filter(user=user).order_by('-when_posted')
+    profile_user = userget.objects.get(username=username)  # The user whose profile is being viewed
+    posts = Post.objects.filter(user=profile_user).order_by('-when_posted')
+
+    # Check if the current user is following the profile user
+    is_following = Follows.objects.filter(follower=user, followed=profile_user).exists()
+
+    # Handle follow/unfollow action
+    if request.method == "POST":
+        if 'follow' in request.POST:
+            # Follow action
+            Follows.objects.create(follower=user, followed=profile_user)
+            messages.success(request, f"You are now following {profile_user.username}.")
+        elif 'unfollow' in request.POST:
+            # Unfollow action
+            Follows.objects.filter(follower=user, followed=profile_user).delete()
+            messages.success(request, f"You have unfollowed {profile_user.username}.")
+
+        return redirect('profile', username=username)
 
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            caption = form.cleaned_data["caption"]
-            image_or_video_url = form.cleaned_data["image_or_video_url"]
-            category = form.cleaned_data["category"]
-            location = form.cleaned_data["location"]
+    return render(request, "profile.html", {
+        "username": username, "page_obj": page_obj, "is_following": is_following
+    })
 
-            post_caption = PostCaption.objects.create(content=caption)
-            Post.objects.create(
-                user=user,
-                caption=post_caption,
-                image_or_video_url=image_or_video_url,
-                category=category,
-                location=location
-            )
-            messages.success(request, "Post created successfully!")
-            return redirect("profile", username=username)
-    else:
-        form = PostForm()
-
-    return render(request, "profile.html", {"form": form, "username": username, "page_obj": page_obj})
 
 
 @login_required
@@ -309,8 +321,29 @@ def post_likes(request, post_id):
 
 
 
+@login_required
+def follow(request, username):
+    if request.user.is_authenticated:
+        user_to_follow = get_object_or_404(User, username=username)
+        if user_to_follow != request.user:
+            # Check if the user is already following
+            if not Follows.objects.filter(follower=request.user, followed=user_to_follow).exists():
+                Follows.objects.create(follower=request.user, followed=user_to_follow)
+        return redirect('profile', username=username)
+    return redirect('login')  # Redirect to login if not authenticated
 
-
+# Unfollow a user
+@login_required
+def unfollow(request, username):
+    if request.user.is_authenticated:
+        user_to_unfollow = get_object_or_404(User, username=username)
+        if user_to_unfollow != request.user:
+            # Check if the user is already following
+            follow_instance = Follows.objects.filter(follower=request.user, followed=user_to_unfollow).first()
+            if follow_instance:
+                follow_instance.delete()
+        return redirect('profile', username=username)
+    return redirect('login')  # Redirect to login if not authenticated
 
 
 

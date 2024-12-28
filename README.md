@@ -44,7 +44,7 @@ This is a Django project.
 7. **Run the development server**:
     Navigate to the [insta](http://_vscodecontentref_/2) folder and run:
     ```sh
-    cd insta/insta
+    cd insta
     python manage.py runserver
     ```
 
@@ -57,11 +57,11 @@ This is a Django project.
     ```sh
     python manage.py test
     ```
-
+<!-- 
 - **Collect static files**:
     ```sh
     python manage.py collectstatic
-    ```
+    ``` -->
 
 ## License
 
