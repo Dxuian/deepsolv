@@ -10,48 +10,43 @@ This is a Django project.
     cd <repository-folder>
     ```
 
-<!-- 2. **Create a virtual environment**:
-    ```sh
-    python -m venv venv
-    ```
+### Option 1: Traditional Setup
 
-3. **Activate the virtual environment**:
-    - On Windows:
-        ```sh
-        venv\Scripts\activate
-        ```
-    - On macOS and Linux:
-        ```sh
-        source venv/bin/activate -->
-        ```
-
-4. **Install dependencies**:
+2. **Install dependencies**:
     ```sh
     pip install -r requirements.txt
     ```
-5. **Change dir to insta**:
+
+3. **Change directory to [insta](http://_vscodecontentref_/1)**:
     ```sh
     cd insta
     ```
 
-6. **Install dependencies**:
+4. **Apply migrations**:
     ```sh
     python manage.py makemigrations
     python manage.py migrate
     ```
 
-<!-- 6. **Create a superuser**:
-    ```sh
-    python manage.py createsuperuser
-    ``` -->
-
-7. **Run the development server**:
+5. **Run the development server**:
     Navigate to the [insta](http://_vscodecontentref_/2) folder and run:
     ```sh
     python manage.py runserver
     ```
 
-8. **Access the application**:
+6. **Access the application**:
+    Open your web browser and go to `http://127.0.0.1:8000/`.
+
+### Option 2: Using Docker Compose
+
+2. **Build and run the Docker containers**:
+    ```sh
+    docker-compose up --build
+    ```
+
+ 
+
+3. **Access the application**:
     Open your web browser and go to `http://127.0.0.1:8000/`.
 
 ## Additional Commands
@@ -60,11 +55,6 @@ This is a Django project.
     ```sh
     python manage.py test
     ```
-<!-- 
-- **Collect static files**:
-    ```sh
-    python manage.py collectstatic
-    ``` -->
 
 ## License
 

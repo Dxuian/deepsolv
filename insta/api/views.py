@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.contrib.auth import get_user_model
 
 
 
@@ -23,71 +24,6 @@ from .models import Post, User, Likes, Follows
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegisterForm
-
-def hello_world(request):
-    return HttpResponse("Hello, World!")
-
-
-@login_required
-def user_logout(request):
-    logout(request)
-    messages.success(request, "You have been logged out.")
-    return redirect('login')
- 
-
-DEV = True
-def PASSWORDLENGTH():
-    if(DEV):
-        return 0 
-    return 8
-def register(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-
-        if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            email_confirmation = form.cleaned_data['email_confirmation']
-            password = form.cleaned_data['password']
-            password_confirmation = form.cleaned_data['password_confirmation']
-            accept_terms = form.cleaned_data['accept_terms']
-
-            if password != password_confirmation:
-                messages.error(request, "Passwords do not match.")
-                return render(request, "register.html", {"form": form})
-
-            if email != email_confirmation:
-                messages.error(request, "Emails do not match.")
-                return render(request, "register.html", {"form": form})
-
-            if len(password) < PASSWORDLENGTH():
-                messages.error(request, "Password must be at least 8 characters long.")
-                return render(request, "register.html", {"form": form})
-
-            if User.objects.filter(username=username).exists():
-                messages.error(request, "Username is already taken.")
-                return render(request, "register.html", {"form": form})
-
-            if User.objects.filter(email=email).exists():
-                messages.error(request, "Email is already registered.")
-                return render(request, "register.html", {"form": form})
-
-            user = User.objects.create_user(username=username, password=password, email=email)
-            user.first_name = first_name
-            user.last_name = last_name
-            user.save()
-
-            messages.success(request, "Account created successfully!")
-            return redirect('login')   
-
-    else:
-        form = RegisterForm()
-
-    return render(request, "register.html", {"form": form})
-
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm
@@ -147,6 +83,72 @@ from .models import Comment
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Post, Likes as Like
+userget = get_user_model()  
+def hello_world(request):
+    return HttpResponse("Hello, World!")
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('login')
+ 
+
+DEV = True
+def PASSWORDLENGTH():
+    if(DEV):
+        return 0 
+    return 8
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            email_confirmation = form.cleaned_data['email_confirmation']
+            password = form.cleaned_data['password']
+            password_confirmation = form.cleaned_data['password_confirmation']
+            accept_terms = form.cleaned_data['accept_terms']
+
+            if password != password_confirmation:
+                messages.error(request, "Passwords do not match.")
+                return render(request, "register.html", {"form": form})
+
+            if email != email_confirmation:
+                messages.error(request, "Emails do not match.")
+                return render(request, "register.html", {"form": form})
+
+            if len(password) < PASSWORDLENGTH():
+                messages.error(request, "Password must be at least 8 characters long.")
+                return render(request, "register.html", {"form": form})
+
+            if userget.objects.filter(username=username).exists():
+                messages.error(request, "Username is already taken.")
+                return render(request, "register.html", {"form": form})
+
+            if userget.objects.filter(email=email).exists():
+                messages.error(request, "Email is already registered.")
+                return render(request, "register.html", {"form": form})
+
+            user = userget.objects.create_user(username=username, password=password, email=email)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+
+            messages.success(request, "Account created successfully!")
+            return redirect('login')   
+
+    else:
+        form = RegisterForm()
+
+    return render(request, "register.html", {"form": form})
+
+
+
 
 
 @login_required
@@ -230,13 +232,12 @@ from django.contrib.auth.models import User
 from .models import Post, Follows
 from django.contrib import messages
 
-from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from .models import Post, Follows
 from django.contrib import messages
 from django.core.paginator import Paginator
 
-userget = get_user_model()   
+ 
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
