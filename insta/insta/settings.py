@@ -74,12 +74,21 @@ WSGI_APPLICATION = 'insta.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import os
+from pathlib import Path
+import dj_database_url
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dev',       # Database name matches the docker-compose MYSQL_DATABASE
+        'USER': 'dev',           # User matches MYSQL_USER
+        'PASSWORD': 'dev',   # Password matches MYSQL_PASSWORD
+        'HOST': 'db',             # Host matches the service name in docker-compose
+        'PORT': '3306',           # Default MySQL port
     }
 }
+
 
 
 # Password validation
