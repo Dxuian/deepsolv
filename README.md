@@ -48,7 +48,6 @@ This is a Django project.
 7. **Run the development server**:
     Navigate to the [insta](http://_vscodecontentref_/2) folder and run:
     ```sh
-    cd insta
     python manage.py runserver
     ```
 
