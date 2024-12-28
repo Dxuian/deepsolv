@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}InstaClone{% endblock %}</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <nav>
+            <a href="{% url 'homepage' %}">Home</a>
+            <a href="{% url 'profile' user.username %}">Profile</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    {% else %}
+        <nav>
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        </nav>
+    {% endif %}
+    <div>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

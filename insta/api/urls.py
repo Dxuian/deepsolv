@@ -2,7 +2,14 @@
 # filepath: /C:/Users/death/Desktop/deepsolv/api/urls.py
 from django.urls import path
 from .views import hello_world
+from django.urls import path
+from . import views
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
-    path('', hello_world, name='hello_world'),
+    path('register/', views.register, name='register'),
+    path('login/', views.user_login, name='login'),
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('', views.homepage, name='homepage'),
+    path('profile/<str:username>/', views.profile, name='profile'),
 ]

@@ -10,7 +10,7 @@ import uuid
     # profile_picture = models.URLField(blank=True, null=True)
 class User(AbstractUser):
     bio = models.TextField(blank=True, null=True)
-    profile_picture = models.URLField(blank=True, null=True)
+    # profile_picture = models.URLField(blank=True, null=True)
 
 class PostCaption(models.Model):
     post_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
@@ -23,6 +23,7 @@ class Post(models.Model):
     post_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     when_posted = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=255 , default="Post title")
     caption = models.ForeignKey(PostCaption, on_delete=models.CASCADE)
     image_or_video_url = models.URLField(blank=True, null=True)
     category = models.CharField(max_length=100)  
@@ -45,6 +46,14 @@ class Likes(models.Model):
     def __str__(self):
         return f"{self.user.username} liked Post {self.post.post_id}"
  
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on Post {self.post.post_id}"
 
  
 
