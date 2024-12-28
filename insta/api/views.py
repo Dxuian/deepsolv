@@ -247,33 +247,60 @@ from django.core.paginator import Paginator
 
 userget = get_user_model()  # Get the custom user model
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.core.paginator import Paginator
+from .models import Post, Follows
+
+userget = get_user_model()
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.core.paginator import Paginator
+from .models import Post, Follows
+
+userget = get_user_model()
+
 def profile(request, username):
-    user = request.user
-    profile_user = userget.objects.get(username=username)  # The user whose profile is being viewed
+    """
+    Display the profile page of a user with their posts and follow/unfollow functionality.
+    """
+    # Get the user whose profile is being viewed
+    profile_user = get_object_or_404(userget, username=username)
+    
+    # Fetch all posts of the profile user
     posts = Post.objects.filter(user=profile_user).order_by('-when_posted')
-
+    
     # Check if the current user is following the profile user
-    is_following = Follows.objects.filter(follower=user, followed=profile_user).exists()
-
-    # Handle follow/unfollow action
-    if request.method == "POST":
+    is_following = Follows.objects.filter(follower=request.user, followed=profile_user).exists()
+    
+    # Handle POST requests for follow/unfollow actions
+    if request.method == "POST" and request.user.is_authenticated:
         if 'follow' in request.POST:
-            # Follow action
-            Follows.objects.create(follower=user, followed=profile_user)
-            messages.success(request, f"You are now following {profile_user.username}.")
+            if not is_following:
+                Follows.objects.create(follower=request.user, followed=profile_user)
+                messages.success(request, f"You are now following {profile_user.username}.")
         elif 'unfollow' in request.POST:
-            # Unfollow action
-            Follows.objects.filter(follower=user, followed=profile_user).delete()
-            messages.success(request, f"You have unfollowed {profile_user.username}.")
-
+            if is_following:
+                Follows.objects.filter(follower=request.user, followed=profile_user).delete()
+                messages.success(request, f"You have unfollowed {profile_user.username}.")
+        
+        # Redirect back to the profile page to avoid form resubmission issues
         return redirect('profile', username=username)
-
+    
+    # Paginate the posts
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
+    
+    # Render the profile template with context
     return render(request, "profile.html", {
-        "username": username, "page_obj": page_obj, "is_following": is_following
+        "username": username,
+        "page_obj": page_obj,
+        "user": profile_user,
+        "is_following": is_following,
     })
 
 
@@ -321,29 +348,46 @@ def post_likes(request, post_id):
 
 
 
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth import get_user_model
+from .models import Follows
+
+userget = get_user_model()
+
 @login_required
 def follow(request, username):
+    """
+    Allows the logged-in user to follow another user.
+    """
     if request.user.is_authenticated:
-        user_to_follow = get_object_or_404(User, username=username)
-        if user_to_follow != request.user:
-            # Check if the user is already following
-            if not Follows.objects.filter(follower=request.user, followed=user_to_follow).exists():
-                Follows.objects.create(follower=request.user, followed=user_to_follow)
-        return redirect('profile', username=username)
-    return redirect('login')  # Redirect to login if not authenticated
+        user_to_follow = get_object_or_404(userget, username=username)
 
-# Unfollow a user
+        if user_to_follow != request.user:
+            Follows.objects.get_or_create(follower=request.user, followed=user_to_follow)
+
+        return redirect('profile', username=username)
+    
+    return redirect('login')
+
 @login_required
 def unfollow(request, username):
+    """
+    Allows the logged-in user to unfollow another user.
+    """
     if request.user.is_authenticated:
         user_to_unfollow = get_object_or_404(User, username=username)
+
+        # Prevent unfollowing oneself
         if user_to_unfollow != request.user:
-            # Check if the user is already following
-            follow_instance = Follows.objects.filter(follower=request.user, followed=user_to_unfollow).first()
-            if follow_instance:
-                follow_instance.delete()
+            # Find and delete the follow relationship if it exists
+            Follows.objects.filter(follower=request.user, followed=user_to_unfollow).delete()
+
+        # Redirect back to the profile of the user being unfollowed
         return redirect('profile', username=username)
-    return redirect('login')  # Redirect to login if not authenticated
+    
+    # Redirect to login if the user is not authenticated
+    return redirect('login')
+
 
 
 

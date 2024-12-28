@@ -3,22 +3,23 @@
 {% block content %}
     <h2>{{ username }}'s Profile</h2>
 
-    <!-- Follow/Unfollow Button -->
-    <div class="follow-btn">
-        {% if request.user.username != username %}
-            {% if request.user in user.followers.all %}
-                <form method="POST" action="{% url 'unfollow' username=username %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Unfollow</button>
-                </form>
-            {% else %}
-                <form method="POST" action="{% url 'follow' username=username %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Follow</button>
-                </form>
-            {% endif %}
+<!-- Follow/Unfollow Button -->
+<div class="follow-btn">
+    {% if request.user.username != username %}
+        {% if is_following %}
+            <form method="POST" action="{% url 'profile' username=username %}">
+                {% csrf_token %}
+                <button type="submit" name="unfollow" class="btn btn-danger">Unfollow</button>
+            </form>
+        {% else %}
+            <form method="POST" action="{% url 'profile' username=username %}">
+                {% csrf_token %}
+                <button type="submit" name="follow" class="btn btn-primary">Follow</button>
+            </form>
         {% endif %}
-    </div>
+    {% endif %}
+</div>
+
 
     <!-- Post Form -->
     {% if form %}
