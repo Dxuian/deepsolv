@@ -6,11 +6,11 @@
     <title>{% block title %}InstaClone{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-black text-white">
     {% if user.is_authenticated %}
         <nav>
-            <a href="{% url 'homepage' %}">Home</a>
-            <a href="{% url 'profile' user.username %}">Profile</a>
+            <a href="{% url 'homepage' %}" class="bg-red-100 text-red-900 text-xl m-1 p-1">Home</a>
+            <a href="{% url 'profile' user.username %}" class="bg-red-100 text-red-900 text-xl m-1 p-1">Profile</a>
             <form method="POST" action="{% url 'user_logout' %}" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit">Logout</button>
@@ -23,8 +23,8 @@
         </nav>
     {% else %}
         <nav>
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'login' %}"  class="bg-red-100 text-red-900 text-xl m-1 p-1" >Login</a>
+            <a href="{% url 'register' %}"  class="bg-red-100 text-red-900  text-xl  m-1 p-1">Register</a>
         </nav>
     {% endif %}
     
