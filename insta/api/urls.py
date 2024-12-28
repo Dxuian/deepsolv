@@ -1,5 +1,4 @@
 
-# filepath: /C:/Users/death/Desktop/deepsolv/api/urls.py
 from django.urls import path
 from .views import hello_world
 from django.urls import path

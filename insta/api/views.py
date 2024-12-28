@@ -23,8 +23,6 @@ from .models import Post, User, Likes, Follows
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegisterForm
-# Create your views here.
-# filepath: /C:/Users/death/Desktop/deepsolv/api/views.py
 
 def hello_world(request):
     return HttpResponse("Hello, World!")
@@ -56,22 +54,18 @@ def register(request):
             password_confirmation = form.cleaned_data['password_confirmation']
             accept_terms = form.cleaned_data['accept_terms']
 
-            # Validate if passwords match
             if password != password_confirmation:
                 messages.error(request, "Passwords do not match.")
                 return render(request, "register.html", {"form": form})
 
-            # Validate if emails match
             if email != email_confirmation:
                 messages.error(request, "Emails do not match.")
                 return render(request, "register.html", {"form": form})
 
-            # Validate password strength (min 8 characters)
             if len(password) < PASSWORDLENGTH():
                 messages.error(request, "Password must be at least 8 characters long.")
                 return render(request, "register.html", {"form": form})
 
-            # Check if username or email is already taken
             if User.objects.filter(username=username).exists():
                 messages.error(request, "Username is already taken.")
                 return render(request, "register.html", {"form": form})
@@ -80,15 +74,13 @@ def register(request):
                 messages.error(request, "Email is already registered.")
                 return render(request, "register.html", {"form": form})
 
-            # Create the user
             user = User.objects.create_user(username=username, password=password, email=email)
             user.first_name = first_name
             user.last_name = last_name
             user.save()
 
-            # Success message
             messages.success(request, "Account created successfully!")
-            return redirect('login')  # Redirect to login page after successful registration
+            return redirect('login')   
 
     else:
         form = RegisterForm()
@@ -244,7 +236,7 @@ from .models import Post, Follows
 from django.contrib import messages
 from django.core.paginator import Paginator
 
-userget = get_user_model()  # Get the custom user model
+userget = get_user_model()   
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
@@ -266,16 +258,12 @@ def profile(request, username):
     """
     Display the profile page of a user with their posts and follow/unfollow functionality.
     """
-    # Get the user whose profile is being viewed
     profile_user = get_object_or_404(userget, username=username)
     
-    # Fetch all posts of the profile user
     posts = Post.objects.filter(user=profile_user).order_by('-when_posted')
     
-    # Check if the current user is following the profile user
     is_following = Follows.objects.filter(follower=request.user, followed=profile_user).exists()
     
-    # Handle POST requests for follow/unfollow actions
     if request.method == "POST" and request.user.is_authenticated:
         if 'follow' in request.POST:
             if not is_following:
@@ -286,15 +274,12 @@ def profile(request, username):
                 Follows.objects.filter(follower=request.user, followed=profile_user).delete()
                 messages.success(request, f"You have unfollowed {profile_user.username}.")
         
-        # Redirect back to the profile page to avoid form resubmission issues
         return redirect('profile', username=username)
     
-    # Paginate the posts
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # Render the profile template with context
     return render(request, "profile.html", {
         "username": username,
         "page_obj": page_obj,
@@ -376,15 +361,11 @@ def unfollow(request, username):
     if request.user.is_authenticated:
         user_to_unfollow = get_object_or_404(User, username=username)
 
-        # Prevent unfollowing oneself
         if user_to_unfollow != request.user:
-            # Find and delete the follow relationship if it exists
             Follows.objects.filter(follower=request.user, followed=user_to_unfollow).delete()
 
-        # Redirect back to the profile of the user being unfollowed
         return redirect('profile', username=username)
     
-    # Redirect to login if the user is not authenticated
     return redirect('login')
 
 
@@ -397,12 +378,10 @@ def user_login(request):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             
-            # Validation in view (check if the fields are not empty)
             if not username or not password:
                 messages.error(request, "Username and password cannot be empty.")
                 return render(request, "login.html", {"form": form})
 
-            # Authenticate the user
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
