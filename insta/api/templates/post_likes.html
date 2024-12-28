@@ -4,6 +4,7 @@
     <h2>Post Likes</h2>
 
     <!-- Display the full post details -->
+    <h2>Post by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></h2>
     <div class="post-details" style="background-color: antiquewhite; margin-bottom: 10px; padding: 10px;">
         <h3>{{ post.title }}</h3>
 

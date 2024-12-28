@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Post by {{ post.user.username }}</h2>
+    <h2>Post by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></h2>
     <p>{{ post.caption.content }}</p>
     <p>Category: {{ post.category }}</p>
     <p>Location: {{ post.location }}</p>
@@ -15,7 +15,7 @@
     <h3>Comments:</h3>
     <ul>
         {% for comment in comments %}
-            <li>{{ comment.content }} by {{ comment.user.username }}</li>
+            <li>{{ comment.content }} by <a href="{% url 'profile' comment.user.username %}">{{ comment.user.username }}</a></li>
         {% endfor %}
     </ul>
 

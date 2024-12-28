@@ -4,11 +4,7 @@
     <h2>{{ username }}'s Profile</h2>
 
     <!-- Post Form -->
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    { if }
 
     <!-- Display Posts -->
     <div>

@@ -122,75 +122,42 @@ from .forms import PostForm, CommentForm
 from .models import Post, Comment, Follows, Likes
 from django.core.paginator import Paginator
 from django.contrib import messages
-def user_login(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            
-            # Validation in view (check if the fields are not empty)
-            if not username or not password:
-                messages.error(request, "Username and password cannot be empty.")
-                return render(request, "login.html", {"form": form})
-
-            # Authenticate the user
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect("homepage")
-            else:
-                messages.error(request, "Invalid username or password.")
-                return render(request, "login.html", {"form": form})
-        else:
-            messages.error(request, "Please correct the errors below.")
-            return render(request, "login.html", {"form": form})
-
-    else:
-        form = LoginForm()
-
-    return render(request, "login.html", {"form": form})
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, CommentForm
 from .models import Post, Comment, Follows, Likes
 from django.core.paginator import Paginator
 from django.contrib import messages
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm
 from .models import Post, Follows, User
 from django.core.paginator import Paginator
 from django.contrib import messages
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm
 from .models import Post, Follows, User
 from django.core.paginator import Paginator
 from django.contrib import messages
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm
 from .models import Post, Follows, User
 from django.core.paginator import Paginator
 from django.contrib import messages
-
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Post, Follows, Comment
 from .forms import PostForm
-
 from .models import Comment  
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Post, Likes as Like
 
+
+@login_required
 def homepage(request):
     if request.method == "POST":
         if "create_post" in request.POST:
@@ -264,7 +231,9 @@ def homepage(request):
         "page_obj": page_obj
     })
 
-@login_required
+
+
+
 def profile(request, username):
     user = request.user
     posts = Post.objects.filter(user=user).order_by('-when_posted')
@@ -337,3 +306,39 @@ def post_likes(request, post_id):
     })
 
 
+
+
+
+
+
+
+
+
+def user_login(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            
+            # Validation in view (check if the fields are not empty)
+            if not username or not password:
+                messages.error(request, "Username and password cannot be empty.")
+                return render(request, "login.html", {"form": form})
+
+            # Authenticate the user
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("homepage")
+            else:
+                messages.error(request, "Invalid username or password.")
+                return render(request, "login.html", {"form": form})
+        else:
+            messages.error(request, "Please correct the errors below.")
+            return render(request, "login.html", {"form": form})
+
+    else:
+        form = LoginForm()
+
+    return render(request, "login.html", {"form": form})
