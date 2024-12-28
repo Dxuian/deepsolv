@@ -4,19 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}InstaClone{% endblock %}</title>
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     {% if user.is_authenticated %}
         <nav>
             <a href="{% url 'homepage' %}">Home</a>
             <a href="{% url 'profile' user.username %}">Profile</a>
-            <!-- Logout form -->
             <form method="POST" action="{% url 'user_logout' %}" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit">Logout</button>
             </form>
-            <!-- if url is /homepage then show this  -->
             {% if request.path == '/homepage/' %}
                 <div>
                 Your feed :   {{ user.username }}

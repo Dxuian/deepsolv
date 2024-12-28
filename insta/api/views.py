@@ -181,7 +181,6 @@ def homepage(request):
                 messages.success(request, "Post created successfully!")
                 return redirect("homepage")
         
-        # Handle Comment submission
         if "create_comment" in request.POST:
             post_id = request.POST.get("post_id")
             content = request.POST.get("content")
@@ -206,7 +205,7 @@ def homepage(request):
     followed_users = Follows.objects.filter(follower=request.user).values_list('followed', flat=True)
     followed_posts = Post.objects.filter(user_id__in=followed_users).order_by('-when_posted')[:7]
 
-    all_users = User.objects.exclude(id=request.user.id)   
+    all_users = userget.objects.exclude(id=request.user.id)   
     non_followed_users = all_users.exclude(id__in=followed_users)
     global_posts = Post.objects.filter(user_id__in=non_followed_users).order_by('-when_posted')[:3]
 

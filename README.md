@@ -10,7 +10,7 @@ This is a Django project.
     cd <repository-folder>
     ```
 
-2. **Create a virtual environment**:
+<!-- 2. **Create a virtual environment**:
     ```sh
     python -m venv venv
     ```
@@ -22,15 +22,19 @@ This is a Django project.
         ```
     - On macOS and Linux:
         ```sh
-        source venv/bin/activate
+        source venv/bin/activate -->
         ```
 
 4. **Install dependencies**:
     ```sh
     pip install -r requirements.txt
     ```
+5. **Change dir to insta**:
+    ```sh
+    cd insta
+    ```
 
-5. **Apply migrations**:
+6. **Install dependencies**:
     ```sh
     python manage.py makemigrations
     python manage.py migrate
